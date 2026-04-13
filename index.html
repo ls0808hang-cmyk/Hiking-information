@@ -1,14 +1,161 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전국 등산로 난이도 안내 가이드 | 산행 준비의 모든 것</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="main.js"></script>
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+
+<div class="background-texture"></div>
+
+<header class="hero">
+    <div class="container">
+        <h1>🌲 전국 등산로 정보 및 난이도 안내</h1>
+        <p>안전하고 즐거운 산행을 위한 필수 가이드</p>
+    </div>
+</header>
+
+<main class="container">
+    <section class="search-section card">
+        <h3>가고 싶은 산의 이름을 입력하세요</h3>
+        <div class="search-bar">
+            <input type="text" id="mountain-search" placeholder="예: 북한산, 설악산" aria-label="산 이름 검색">
+            <button id="search-btn">검색하기</button>
+        </div>
+        <div id="search-feedback" class="feedback-message" hidden></div>
+
+        <!-- Search Result Section -->
+        <div id="search-result" class="search-result-container" hidden>
+            <h2 id="res-name"></h2>
+            <p><strong>📍 위치:</strong> <span id="res-loc"></span></p>
+            <p><strong>⛰️ 높이:</strong> <span id="res-height"></span>m</p>
+            <div class="mountain-info-box">
+                <strong>📝 산 유래 및 정보:</strong>
+                <p id="res-info"></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>🏔️ 등산 난이도별 산행 팁</h2>
+        
+        <div class="difficulty-grid">
+            <difficulty-card 
+                level="초급" 
+                status="easy" 
+                title="🟢 초급 (쉬움)"
+                icon="🥾">
+                <p slot="description">평탄한 산책로 위주의 코스입니다. 운동화로도 가능하지만 발목 보호를 위해 경등산화를 추천합니다.</p>
+                <p slot="examples">예: 아차산, 인왕산 일부</p>
+            </difficulty-card>
+
+            <difficulty-card 
+                level="중급" 
+                status="moderate" 
+                title="🟡 중급 (보통)"
+                icon="🧗">
+                <p slot="description">경사도가 있고 바위 구간이 섞여 있습니다. 등산화와 스틱이 필수이며, 충분한 수분 섭취가 필요합니다.</p>
+                <p slot="examples">예: 관악산, 도봉산</p>
+            </difficulty-card>
+
+            <difficulty-card 
+                level="상급" 
+                status="hard" 
+                title="🔴 상급 (어려움)"
+                icon="🏔️">
+                <p slot="description">험준한 암릉 구간이나 장거리 코스입니다. 전문적인 장비와 체력이 요구되며 기상 변화에 주의해야 합니다.</p>
+                <p slot="examples">예: 설악산 공룡능선</p>
+            </difficulty-card>
+        </div>
+
+        <section class="detailed-guide card">
+            <h2>🥾 등산 초보자를 위한 완벽 입문 가이드</h2>
+            <p class="intro-text">
+                등산은 단순한 운동을 넘어 지친 일상에 활력을 불어넣는 '자연 치유'의 과정입니다. 하지만 준비 없는 산행은 자칫 큰 부상으로 이어질 수 있습니다. TEAM Kim이 제안하는 아래 가이드를 통해 안전하고 즐거운 첫 산행을 준비해 보세요.
+            </p>
+
+            <div class="guide-content">
+                <div class="guide-block">
+                    <h3>1. 산행 전: 철저한 계획이 안전을 보장합니다</h3>
+                    <p>많은 초보자가 간과하는 것이 바로 <strong>'코스 숙지'</strong>입니다. 무작정 산에 오르기보다 아래 세 가지를 먼저 체크하세요.</p>
+                    <ul class="bullet-list">
+                        <li><strong>기상 상황 확인:</strong> 산의 날씨는 평지와 다릅니다. 기온이 5도 이상 낮을 수 있으며, 갑작스러운 비에 대비해야 합니다.</li>
+                        <li><strong>일몰 시간 체크:</strong> 산은 평지보다 해가 빨리 집니다. 예상 하산 시간을 일몰 1~2시간 전으로 잡는 것이 가장 안전합니다.</li>
+                        <li><strong>동선 파악:</strong> 등산로 입구와 하산 지점의 대중교통이나 주차 정보를 미리 확인하세요.</li>
+                    </ul>
+                </div>
+
+                <div class="guide-block">
+                    <h3>2. 복장 가이드: '레이어링 시스템'을 기억하세요</h3>
+                    <p>등산복의 핵심은 <strong>겹쳐 입기(Layering)</strong>입니다. 한 벌의 두꺼운 옷보다 얇은 옷을 여러 번 겹쳐 입는 것이 체온 조절에 유리합니다.</p>
+                    <div class="table-wrapper">
+                        <table class="layering-table">
+                            <thead>
+                                <tr>
+                                    <th>구분</th>
+                                    <th>역할 및 추천 소재</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>베이스 레이어</strong></td>
+                                    <td>땀을 빨리 흡수하고 말리는 기능성 티셔츠 (면 소재는 금물!)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>미드 레이어</strong></td>
+                                    <td>보온을 위한 플리스나 얇은 경량 패딩</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>아우터 쉘</strong></td>
+                                    <td>바람과 비를 막아주는 바람막이 또는 고어텍스 재킷</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="guide-block">
+                    <h3>3. 올바른 보행법: 무릎을 보호하는 법</h3>
+                    <p>하산할 때 무릎 통증을 호소하는 초보자가 많습니다. 이는 잘못된 보행법 때문인 경우가 많습니다.</p>
+                    <p>보폭을 좁게 유지하며 발바닥 전체로 지면을 밟는 느낌으로 걸으세요. 오를 때는 상체를 살짝 숙여 무게 중심을 앞에 두고, 내려갈 때는 무릎을 살짝 굽혀 충격을 흡수해야 합니다. <strong>등산 스틱</strong>은 체중의 20~30%를 분산시켜 주므로 장거리 산행 시 필수입니다.</p>
+                </div>
+
+                <div class="guide-block">
+                    <h3>4. 산행 에티켓 (LNT 지침)</h3>
+                    <p>성숙한 등산 문화를 위해 'LNT(Leave No Trace)' 원칙을 준수해야 합니다.</p>
+                    <ul class="bullet-list">
+                        <li>가져온 쓰레기는 100% 다시 가져가기</li>
+                        <li>지정된 탐방로로만 통행하기 (식생 보호)</li>
+                        <li>야생 동물에게 음식 주지 않기</li>
+                        <li>라디오나 스피커 소리 크게 틀지 않기</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pro-tip-box">
+                <h4>💡 전문 상담원의 한마디</h4>
+                <p>"가장 좋은 산행은 정상을 정복하는 것이 아니라, 안전하게 집으로 돌아오는 것입니다. 몸 상태가 좋지 않다면 언제든 하산할 수 있는 용기가 진정한 등산가의 자세입니다."</p>
+            </div>
+        </section>
+
+        <article class="checklist-card card">
+            <h2>🎒 등산 전 필수 체크리스트</h2>
+            <ul class="checklist">
+                <li><span>기상 예보 확인 (산의 날씨는 평지와 다릅니다)</span></li>
+                <li><span>여분의 옷 (정상 부근은 기온이 낮습니다)</span></li>
+                <li><span>고열량 간식 (초콜릿, 견과류 등)</span></li>
+                <li><span>보조 배터리와 지도 앱</span></li>
+            </ul>
+        </article>
+    </section>
+</main>
+
+<footer class="container">
+    <p>© 2026 등산로 가이드 - TEAM Kim | <a href="#">개인정보처리방침</a></p>
+</footer>
+
 </body>
 </html>

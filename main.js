@@ -137,41 +137,52 @@ document.addEventListener('DOMContentLoaded', () => {
         const mountainName = searchInput.value.trim();
         
         if (!mountainName) {
-            showFeedback('산 이름을 입력해 주세요.', 'error');
+            showFeedback('산 이름을 입력해 주세요!', 'error');
             return;
         }
 
         showFeedback(`'${mountainName}' 정보를 실시간으로 불러오는 중입니다...`, 'success');
 
         // Korea Forest Service API URL (Mountain Information)
-        const url = `https://apis.data.go.kr/1400000/service/history/mountainInfo?serviceKey=${SERVICE_KEY}&mntnNm=${encodeURIComponent(mountainName)}&_type=json`;
+        // Note: Using the provided service key. In case of CORS issues, a proxy like 'https://cors-anywhere.herokuapp.com/' can be prepended.
+        const apiUrl = `https://apis.data.go.kr/1400000/service/history/mountainInfo?serviceKey=${SERVICE_KEY}&mntnNm=${encodeURIComponent(mountainName)}&_type=json`;
 
         try {
-            const response = await fetch(url);
-            const data = await response.json();
+            const response = await fetch(apiUrl);
+            
+            if (!response.ok) {
+                throw new Error('네트워크 응답에 문제가 발생했습니다.');
+            }
 
-            if (data.response.body.items && data.response.body.items.item) {
-                // Take the first result
+            const data = await response.json();
+            console.log("API 응답 데이터:", data); // For debugging
+
+            if (data.response && data.response.body && data.response.body.items && data.response.body.items.item) {
+                // Take the first result (handle both single object and array cases)
                 const item = Array.isArray(data.response.body.items.item) 
                     ? data.response.body.items.item[0] 
                     : data.response.body.items.item;
 
-                // Update UI with real data
+                // Update UI with sanitized real data
                 resName.innerText = item.mntnNm || mountainName;
                 resLoc.innerText = item.mntnadres || '정보 없음';
-                resHeight.innerText = item.mntnhght || '0';
-                resInfo.innerText = item.mntninfdtl ? item.mntninfdtl.replace(/&lt;br&gt;/g, '\n') : '상세 설명 정보가 없습니다.';
+                resHeight.innerText = (item.mntnhght || '0') + 'm';
+                
+                // Sanitize description: remove HTML-like breaks and handle empty cases
+                let description = item.mntninfdtl || '상세 설명 정보가 없습니다.';
+                description = description.replace(/&lt;br&gt;/g, '\n').replace(/<br\s*\/?>/gi, '\n');
+                resInfo.innerText = description;
 
                 resultContainer.hidden = false;
                 
                 // Smooth scroll to result
                 resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                showFeedback(`'${mountainName}'에 대한 정보를 찾을 수 없습니다. 이름을 다시 확인해 주세요.`, 'error');
+                showFeedback('검색 결과가 없습니다. 산 이름을 정확히 입력해 주세요 (예: 설악산)', 'error');
             }
         } catch (error) {
-            console.error('API Error:', error);
-            showFeedback('데이터를 가져오는 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.', 'error');
+            console.error('API Error details:', error);
+            showFeedback('API 연결에 문제가 발생했습니다. 키 승인 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
         }
     };
 

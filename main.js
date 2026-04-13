@@ -141,21 +141,26 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Hide result section during new search
+        resultContainer.hidden = true;
         showFeedback(`'${mountainName}' 정보를 실시간으로 불러오는 중입니다...`, 'success');
 
         // Korea Forest Service API URL (Mountain Information)
-        // Note: Using the provided service key. In case of CORS issues, a proxy like 'https://cors-anywhere.herokuapp.com/' can be prepended.
         const apiUrl = `https://apis.data.go.kr/1400000/service/history/mountainInfo?serviceKey=${SERVICE_KEY}&mntnNm=${encodeURIComponent(mountainName)}&_type=json`;
 
         try {
             const response = await fetch(apiUrl);
-            
-            if (!response.ok) {
-                throw new Error('네트워크 응답에 문제가 발생했습니다.');
+            const textData = await response.text(); // Fetch as text first to check for specific service errors
+
+            // Check for common API service errors (like key registration issues)
+            if (textData.includes('SERVICE_KEY_IS_NOT_REGISTERED')) {
+                showFeedback('인증키가 아직 활성화되지 않았습니다. 승인 후 최대 1~2시간이 소요될 수 있습니다.', 'error');
+                return;
             }
 
-            const data = await response.json();
-            console.log("API 응답 데이터:", data); // For debugging
+            // Attempt to parse text as JSON
+            const data = JSON.parse(textData);
+            console.log("API 응답 데이터:", data);
 
             if (data.response && data.response.body && data.response.body.items && data.response.body.items.item) {
                 // Take the first result (handle both single object and array cases)
@@ -169,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 resHeight.innerText = (item.mntnhght || '0') + 'm';
                 
                 // Sanitize description: remove HTML-like breaks and handle empty cases
-                let description = item.mntninfdtl || '상세 설명 정보가 없습니다.';
+                let description = item.mntninfdtl || '상세 정보가 준비 중입니다.';
                 description = description.replace(/&lt;br&gt;/g, '\n').replace(/<br\s*\/?>/gi, '\n');
                 resInfo.innerText = description;
 
@@ -178,11 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Smooth scroll to result
                 resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                showFeedback('검색 결과가 없습니다. 산 이름을 정확히 입력해 주세요 (예: 설악산)', 'error');
+                showFeedback(`'${mountainName}'에 대한 검색 결과가 없습니다. '설악산'처럼 전체 이름을 입력해 보세요.`, 'error');
             }
         } catch (error) {
             console.error('API Error details:', error);
-            showFeedback('API 연결에 문제가 발생했습니다. 키 승인 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
+            showFeedback('데이터를 처리하는 중 문제가 발생했습니다. 키 활성화 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
         }
     };
 

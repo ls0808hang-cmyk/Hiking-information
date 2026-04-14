@@ -27,8 +27,8 @@ A modern, accessible web application providing information on hiking trails and 
 - **Shadows**: Multi-layered "lifted" effect for cards.
 
 ## Current Plan: Modernization & Redesign
-1.  **Extract styling and logic**: Move all inline assets to their respective files.
-2.  **Implement Web Components**: Define `<difficulty-card>` in `main.js`.
-3.  **Apply Modern Styles**: Use `style.css` to build the premium UI.
-4.  **Real-time API Integration**: Replace mock data with live fetching from the Korea Forest Service API.
-5.  **Verify & Refine**: Ensure accessibility and responsiveness.
+1.  **Extract styling and logic**: Move all inline assets to their respective files. (Done)
+2.  **Implement Web Components**: Define `<difficulty-card>` in `main.js`. (Done)
+3.  **Apply Modern Styles**: Use `style.css` to build the premium UI. (Done)
+4.  **Real-time API Integration via Proxy**: Implemented Cloudflare Pages serverless function (`/functions/api/mountain.js`) to proxy the Korea Forest Service API, solving CORS and security concerns.
+5.  **Verify & Refine**: Ensure accessibility and responsiveness. (In Progress)

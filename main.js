@@ -116,8 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const resHeight = document.getElementById('res-height');
     const resInfo = document.getElementById('res-info');
 
-    const SERVICE_KEY = 'c6d38e7f40238d4d5ee29ef0a05b4f884d1d294a56c3e61a5dfc8f04a0f7b696';
-
     const showFeedback = (message, type = 'info') => {
         feedback.textContent = message;
         feedback.className = `feedback-message ${type}`;
@@ -145,49 +143,48 @@ document.addEventListener('DOMContentLoaded', () => {
         resultContainer.hidden = true;
         showFeedback(`'${mountainName}' 정보를 실시간으로 불러오는 중입니다...`, 'success');
 
-        // Korea Forest Service API URL (Mountain Information)
-        const apiUrl = `https://apis.data.go.kr/1400000/service/history/mountainInfo?serviceKey=${SERVICE_KEY}&mntnNm=${encodeURIComponent(mountainName)}&_type=json`;
+        // Use the Cloudflare Pages Proxy Endpoint
+        const apiUrl = `/api/search?searchWrd=${encodeURIComponent(mountainName)}`;
 
         try {
             const response = await fetch(apiUrl);
-            const textData = await response.text(); // Fetch as text first to check for specific service errors
+            const textData = await response.text();
 
-            // Check for common API service errors (like key registration issues)
+            // Check for service key errors
             if (textData.includes('SERVICE_KEY_IS_NOT_REGISTERED')) {
-                showFeedback('인증키가 아직 활성화되지 않았습니다. 승인 후 최대 1~2시간이 소요될 수 있습니다.', 'error');
+                showFeedback('인증키가 아직 활성화되지 않았습니다. 승인 후 약 1~2시간 뒤에 다시 시도해 주세요!', 'error');
                 return;
             }
 
-            // Attempt to parse text as JSON
+            // Parse as JSON
             const data = JSON.parse(textData);
-            console.log("API 응답 데이터:", data);
+            console.log("API v2 응답 데이터:", data);
 
             if (data.response && data.response.body && data.response.body.items && data.response.body.items.item) {
-                // Take the first result (handle both single object and array cases)
+                // Take the first result
                 const item = Array.isArray(data.response.body.items.item) 
                     ? data.response.body.items.item[0] 
                     : data.response.body.items.item;
 
-                // Update UI with sanitized real data
+                // Update UI using v2 field names
+                // mntnNm: 산이름, mntnAdd: 위치, mntnHght: 높이, mntnInfo: 상세정보
                 resName.innerText = item.mntnNm || mountainName;
-                resLoc.innerText = item.mntnadres || '정보 없음';
-                resHeight.innerText = (item.mntnhght || '0') + 'm';
+                resLoc.innerText = item.mntnAdd || '위치 정보 없음';
+                resHeight.innerText = (item.mntnHght || '0') + 'm';
                 
-                // Sanitize description: remove HTML-like breaks and handle empty cases
-                let description = item.mntninfdtl || '상세 정보가 준비 중입니다.';
+                // Sanitize and display description
+                let description = item.mntnInfo || '상세 정보가 준비 중입니다.';
                 description = description.replace(/&lt;br&gt;/g, '\n').replace(/<br\s*\/?>/gi, '\n');
                 resInfo.innerText = description;
 
                 resultContainer.hidden = false;
-                
-                // Smooth scroll to result
                 resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                showFeedback(`'${mountainName}'에 대한 검색 결과가 없습니다. '설악산'처럼 전체 이름을 입력해 보세요.`, 'error');
+                showFeedback(`'${mountainName}'의 정보를 찾을 수 없습니다. 키 등록 중일 수 있으니 잠시 후 다시 시도해 보세요.`, 'error');
             }
         } catch (error) {
             console.error('API Error details:', error);
-            showFeedback('데이터를 처리하는 중 문제가 발생했습니다. 키 활성화 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
+            showFeedback('데이터 로딩 실패! 키 활성화 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
         }
     };
 

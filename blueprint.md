@@ -31,4 +31,5 @@ A modern, accessible web application providing information on hiking trails and 
 2.  **Implement Web Components**: Define `<difficulty-card>` in `main.js`. (Done)
 3.  **Apply Modern Styles**: Use `style.css` to build the premium UI. (Done)
 4.  **Real-time API Integration via Proxy**: Implemented Cloudflare Pages serverless function (`/functions/api/mountain.js`) to proxy the Korea Forest Service API, solving CORS and security concerns.
-5.  **Verify & Refine**: Ensure accessibility and responsiveness. (In Progress)
+5.  **Site Verification**: Add Google Search Console verification meta tag. (Done)
+6.  **Verify & Refine**: Ensure accessibility and responsiveness. (In Progress)

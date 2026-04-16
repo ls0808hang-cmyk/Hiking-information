@@ -1,3 +1,4 @@
+// Updated for Cloudflare Pages Functions detection
 export async function onRequestGet(context) {
   const { searchParams } = new URL(context.request.url);
   const mountainName = searchParams.get('searchWrd') || '';

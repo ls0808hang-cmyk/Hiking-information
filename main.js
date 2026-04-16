@@ -141,32 +141,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Hide result section during new search
         resultContainer.hidden = true;
-        showFeedback(`'${mountainName}' 정보를 실시간으로 불러오는 중입니다...`, 'success');
+        showFeedback(`'${mountainName}' 정보를 실시간으로 분석 중입니다...`, 'success');
 
-        // Use the Cloudflare Pages Proxy Endpoint
+        // Use the Gemini-powered Search Endpoint
         const apiUrl = `/api/search?searchWrd=${encodeURIComponent(mountainName)}`;
 
         try {
             const response = await fetch(apiUrl);
-            const textData = await response.text();
-
-            // Check for service key errors
-            if (textData.includes('SERVICE_KEY_IS_NOT_REGISTERED')) {
-                showFeedback('인증키가 아직 활성화되지 않았습니다. 승인 후 약 1~2시간 뒤에 다시 시도해 주세요!', 'error');
-                return;
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || '데이터 로딩 실패');
             }
 
-            // Parse as JSON
-            const data = JSON.parse(textData);
-            console.log("API v2 응답 데이터:", data);
+            const item = await response.json();
+            console.log("Gemini API 응답 데이터:", item);
 
-            if (data.response && data.response.body && data.response.body.items && data.response.body.items.item) {
-                // Take the first result
-                const item = Array.isArray(data.response.body.items.item) 
-                    ? data.response.body.items.item[0] 
-                    : data.response.body.items.item;
-
-                // Update UI using v2 field names
+            if (item && item.mntnNm) {
+                // Update UI using Gemini-generated fields
                 // mntnNm: 산이름, mntnAdd: 위치, mntnHght: 높이, mntnInfo: 상세정보
                 resName.innerText = item.mntnNm || mountainName;
                 resLoc.innerText = item.mntnAdd || '위치 정보 없음';
@@ -174,17 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Sanitize and display description
                 let description = item.mntnInfo || '상세 정보가 준비 중입니다.';
-                description = description.replace(/&lt;br&gt;/g, '\n').replace(/<br\s*\/?>/gi, '\n');
                 resInfo.innerText = description;
 
                 resultContainer.hidden = false;
                 resultContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
-                showFeedback(`'${mountainName}'의 정보를 찾을 수 없습니다. 키 등록 중일 수 있으니 잠시 후 다시 시도해 보세요.`, 'error');
+                showFeedback(`'${mountainName}'의 정보를 생성할 수 없습니다. 다시 시도해 보세요.`, 'error');
             }
         } catch (error) {
             console.error('API Error details:', error);
-            showFeedback('데이터 로딩 실패! 키 활성화 상태를 확인하거나 잠시 후 다시 시도해 주세요.', 'error');
+            showFeedback(`오류 발생: ${error.message}`, 'error');
         }
     };
 

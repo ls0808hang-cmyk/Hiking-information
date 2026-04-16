@@ -9,18 +9,20 @@ export async function onRequestGet(context) {
     });
   }
 
+  // Cloudflare Pages uses context.env to access environment variables
   const GEMINI_API_KEY = context.env.GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY is not configured in Cloudflare environment' }), {
+    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY is not configured in Cloudflare environment settings' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
 
   try {
+    // Using v1 API and stable gemini-1.5-flash model
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -50,7 +52,7 @@ export async function onRequestGet(context) {
 
     let text = data.candidates[0].content.parts[0].text.trim();
     
-    // Clean up markdown code blocks if present
+    // Clean up markdown code blocks if present (Gemini sometimes adds them despite instructions)
     if (text.startsWith('```')) {
       text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
     }

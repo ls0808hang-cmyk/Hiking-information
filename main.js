@@ -149,6 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(apiUrl);
             
+            // Check content type to avoid "Unexpected token <" error
+            const contentType = response.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await response.text();
+                console.error("Non-JSON response received:", text);
+                throw new Error("서버에서 올바르지 않은 응답(HTML)을 받았습니다. API 키 설정을 확인해 주세요.");
+            }
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || '데이터 로딩 실패');

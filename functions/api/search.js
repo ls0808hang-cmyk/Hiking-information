@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
   const GEMINI_API_KEY = context.env.GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
-    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY is not configured' }), {
+    return new Response(JSON.stringify({ error: 'GEMINI_API_KEY is not configured in Cloudflare environment' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
@@ -35,12 +35,33 @@ export async function onRequestGet(context) {
       }
     );
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.statusText}`);
+      return new Response(JSON.stringify({ error: data.error?.message || `Gemini API error: ${response.statusText}` }), {
+        status: response.status,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
 
-    const data = await response.json();
-    const text = data.candidates[0].content.parts[0].text.trim();
+    if (!data.candidates || !data.candidates[0]?.content?.parts[0]?.text) {
+      throw new Error('Invalid response structure from Gemini API');
+    }
+
+    let text = data.candidates[0].content.parts[0].text.trim();
+    
+    // Clean up markdown code blocks if present
+    if (text.startsWith('```')) {
+      text = text.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    }
+
+    // Validate if it's valid JSON
+    try {
+      JSON.parse(text);
+    } catch (parseError) {
+      console.error('JSON Parse Error:', text);
+      throw new Error('Gemini returned an invalid JSON format');
+    }
 
     return new Response(text, {
       headers: {

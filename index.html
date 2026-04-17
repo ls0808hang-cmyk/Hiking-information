@@ -1,162 +1,380 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="jjUP-h5131693XFOW3Wq83fwOdeY9rdd6nTsTo-AAXI" />
-    <title>전국 등산로 난이도 안내 가이드 | 산행 준비의 모든 것</title>
-    <link rel="stylesheet" href="style.css">
-    <script type="module" src="main.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>전국 등산로 난이도 안내 가이드 | 산행 준비의 모든 것</title>
+  <meta
+    name="description"
+    content="가고 싶은 산 이름을 검색해 위치, 높이, 산 정보와 등산 난이도 준비 팁을 확인하세요."
+  />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: #1f2937;
+      background: #f5f7f4;
+      line-height: 1.6;
+      /* subtle noise texture */
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      background-blend-mode: overlay;
+      background-attachment: fixed;
+    }
+    .wrap {
+      width: min(960px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    header {
+      background: linear-gradient(135deg, #1f5132, #3d7a52);
+      color: white;
+      padding: 48px 0 36px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1, h2, h3, p { margin: 0; }
+    .hero-sub {
+      margin-top: 10px;
+      opacity: 0.92;
+      font-size: 1.02rem;
+    }
+    .search-card,
+    .result-card,
+    .content-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      padding: 24px;
+      margin-top: 20px;
+      border: 1px solid #e5e7eb;
+    }
+    .search-row {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 0 16px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #1f6b3b;
+    }
+    button {
+      height: 52px;
+      border: 0;
+      border-radius: 12px;
+      background: #1f6b3b;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: filter 0.2s, transform 0.1s;
+    }
+    button:hover { filter: brightness(1.05); }
+    button:active { transform: scale(0.98); }
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 12px;
+      font-size: 0.95rem;
+      color: #374151;
+      min-height: 24px;
+    }
+    .result-card { display: none; }
+    .result-card.show { 
+        display: block; 
+        animation: fadeIn 0.4s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .result-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: #1f5132;
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .info-box {
+      background: #f8faf8;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .info-label {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .info-value {
+      font-weight: 700;
+      word-break: keep-all;
+    }
+    .story {
+      white-space: pre-line;
+      background: #fbfcfb;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+    main { padding: 24px 0 56px; }
+    section { margin-top: 24px; }
+    .level-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .level-item {
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      padding: 16px;
+      background: #fff;
+    }
+    .level-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #14532d;
+    }
+    ul {
+      padding-left: 20px;
+      margin: 10px 0 0;
+    }
+    footer {
+      border-top: 1px solid #dfe6df;
+      padding: 24px 0 40px;
+      color: #6b7280;
+      font-size: 0.95rem;
+      background: #ffffff;
+      text-align: center;
+    }
+    .note {
+      font-size: 0.92rem;
+      color: #6b7280;
+      margin-top: 10px;
+    }
+    @media (max-width: 720px) {
+      .search-row,
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      header {
+        padding: 40px 0 30px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="background-texture"></div>
-
-<header class="hero">
-    <div class="container">
-        <h1>🌲 전국 등산로 정보 및 난이도 안내</h1>
-        <p>안전하고 즐거운 산행을 위한 필수 가이드</p>
+  <header>
+    <div class="wrap">
+      <h1>전국 등산로 정보 및 난이도 안내</h1>
+      <p class="hero-sub">안전하고 즐거운 산행을 위한 필수 가이드</p>
     </div>
-</header>
+  </header>
 
-<main class="container">
-    <section class="search-section card">
-        <h3>가고 싶은 산의 이름을 입력하세요</h3>
-        <div class="search-bar">
-            <input type="text" id="mountain-search" placeholder="예: 북한산, 설악산" aria-label="산 이름 검색">
-            <button id="search-btn">검색하기</button>
-        </div>
-        <div id="search-feedback" class="feedback-message" hidden></div>
+  <main>
+    <div class="wrap">
+      <section class="search-card">
+        <h2>가고 싶은 산의 이름을 입력하세요</h2>
+        <p class="note">예: 북한산, 관악산, 아차산, 지리산, 설악산</p>
 
-        <!-- Search Result Section -->
-        <div id="search-result" class="search-result-container" hidden>
-            <h2 id="res-name"></h2>
-            <p><strong>📍 위치:</strong> <span id="res-loc"></span></p>
-            <p><strong>⛰️ 높이:</strong> <span id="res-height"></span>m</p>
-            <div class="mountain-info-box">
-                <strong>📝 산 유래 및 정보:</strong>
-                <p id="res-info"></p>
-            </div>
-        </div>
-    </section>
-
-    <section class="content-section">
-        <h2>🏔️ 등산 난이도별 산행 팁</h2>
-        
-        <div class="difficulty-grid">
-            <difficulty-card 
-                level="초급" 
-                status="easy" 
-                title="🟢 초급 (쉬움)"
-                icon="🥾">
-                <p slot="description">평탄한 산책로 위주의 코스입니다. 운동화로도 가능하지만 발목 보호를 위해 경등산화를 추천합니다.</p>
-                <p slot="examples">예: 아차산, 인왕산 일부</p>
-            </difficulty-card>
-
-            <difficulty-card 
-                level="중급" 
-                status="moderate" 
-                title="🟡 중급 (보통)"
-                icon="🧗">
-                <p slot="description">경사도가 있고 바위 구간이 섞여 있습니다. 등산화와 스틱이 필수이며, 충분한 수분 섭취가 필요합니다.</p>
-                <p slot="examples">예: 관악산, 도봉산</p>
-            </difficulty-card>
-
-            <difficulty-card 
-                level="상급" 
-                status="hard" 
-                title="🔴 상급 (어려움)"
-                icon="🏔️">
-                <p slot="description">험준한 암릉 구간이나 장거리 코스입니다. 전문적인 장비와 체력이 요구되며 기상 변화에 주의해야 합니다.</p>
-                <p slot="examples">예: 설악산 공룡능선</p>
-            </difficulty-card>
+        <div class="search-row">
+          <input
+            id="mountainInput"
+            type="text"
+            placeholder="산 이름을 입력하세요"
+            autocomplete="off"
+          />
+          <button id="searchBtn" type="button">검색하기</button>
         </div>
 
-        <section class="detailed-guide card">
-            <h2>🥾 등산 초보자를 위한 완벽 입문 가이드</h2>
-            <p class="intro-text">
-                등산은 단순한 운동을 넘어 지친 일상에 활력을 불어넣는 '자연 치유'의 과정입니다. 하지만 준비 없는 산행은 자칫 큰 부상으로 이어질 수 있습니다. TEAM Kim이 제안하는 아래 가이드를 통해 안전하고 즐거운 첫 산행을 준비해 보세요.
-            </p>
+        <div id="status" class="status"></div>
+      </section>
 
-            <div class="guide-content">
-                <div class="guide-block">
-                    <h3>1. 산행 전: 철저한 계획이 안전을 보장합니다</h3>
-                    <p>많은 초보자가 간과하는 것이 바로 <strong>'코스 숙지'</strong>입니다. 무작정 산에 오르기보다 아래 세 가지를 먼저 체크하세요.</p>
-                    <ul class="bullet-list">
-                        <li><strong>기상 상황 확인:</strong> 산의 날씨는 평지와 다릅니다. 기온이 5도 이상 낮을 수 있으며, 갑작스러운 비에 대비해야 합니다.</li>
-                        <li><strong>일몰 시간 체크:</strong> 산은 평지보다 해가 빨리 집니다. 예상 하산 시간을 일몰 1~2시간 전으로 잡는 것이 가장 안전합니다.</li>
-                        <li><strong>동선 파악:</strong> 등산로 입구와 하산 지점의 대중교통이나 주차 정보를 미리 확인하세요.</li>
-                    </ul>
-                </div>
+      <section id="resultCard" class="result-card" aria-live="polite">
+        <div class="result-title">⛰️ <span id="mountainName">산 정보</span></div>
 
-                <div class="guide-block">
-                    <h3>2. 복장 가이드: '레이어링 시스템'을 기억하세요</h3>
-                    <p>등산복의 핵심은 <strong>겹쳐 입기(Layering)</strong>입니다. 한 벌의 두꺼운 옷보다 얇은 옷을 여러 번 겹쳐 입는 것이 체온 조절에 유리합니다.</p>
-                    <div class="table-wrapper">
-                        <table class="layering-table">
-                            <thead>
-                                <tr>
-                                    <th>구분</th>
-                                    <th>역할 및 추천 소재</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><strong>베이스 레이어</strong></td>
-                                    <td>땀을 빨리 흡수하고 말리는 기능성 티셔츠 (면 소재는 금물!)</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>미드 레이어</strong></td>
-                                    <td>보온을 위한 플리스나 얇은 경량 패딩</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>아우터 쉘</strong></td>
-                                    <td>바람과 비를 막아주는 바람막이 또는 고어텍스 재킷</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+        <div class="info-grid">
+          <div class="info-box">
+            <div class="info-label">위치</div>
+            <div id="mountainLocation" class="info-value">-</div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">높이</div>
+            <div id="mountainHeight" class="info-value">-</div>
+          </div>
+        </div>
 
-                <div class="guide-block">
-                    <h3>3. 올바른 보행법: 무릎을 보호하는 법</h3>
-                    <p>하산할 때 무릎 통증을 호소하는 초보자가 많습니다. 이는 잘못된 보행법 때문인 경우가 많습니다.</p>
-                    <p>보폭을 좁게 유지하며 발바닥 전체로 지면을 밟는 느낌으로 걸으세요. 오를 때는 상체를 살짝 숙여 무게 중심을 앞에 두고, 내려갈 때는 무릎을 살짝 굽혀 충격을 흡수해야 합니다. <strong>등산 스틱</strong>은 체중의 20~30%를 분산시켜 주므로 장거리 산행 시 필수입니다.</p>
-                </div>
+        <div class="info-box">
+          <div class="info-label">부제 / 요약</div>
+          <div id="mountainSummary" class="info-value">-</div>
+        </div>
 
-                <div class="guide-block">
-                    <h3>4. 산행 에티켓 (LNT 지침)</h3>
-                    <p>성숙한 등산 문화를 위해 'LNT(Leave No Trace)' 원칙을 준수해야 합니다.</p>
-                    <ul class="bullet-list">
-                        <li>가져온 쓰레기는 100% 다시 가져가기</li>
-                        <li>지정된 탐방로로만 통행하기 (식생 보호)</li>
-                        <li>야생 동물에게 음식 주지 않기</li>
-                        <li>라디오나 스피커 소리 크게 틀지 않기</li>
-                    </ul>
-                </div>
-            </div>
+        <div class="story">
+          <div class="info-label">산 유래 및 정보</div>
+          <div id="mountainStory">-</div>
+        </div>
+      </section>
 
-            <div class="pro-tip-box">
-                <h4>💡 전문 상담원의 한마디</h4>
-                <p>"가장 좋은 산행은 정상을 정복하는 것이 아니라, 안전하게 집으로 돌아오는 것입니다. 몸 상태가 좋지 않다면 언제든 하산할 수 있는 용기가 진정한 등산가의 자세입니다."</p>
-            </div>
-        </section>
+      <section class="content-card">
+        <h2>등산 난이도별 산행 팁</h2>
+        <div class="level-grid" style="margin-top: 14px;">
+          <div class="level-item">
+            <strong>초급</strong>
+            평탄한 산책로 위주의 코스입니다. 운동화로도 가능하지만 발목 보호를 위해 경등산화를 추천합니다.
+            <div class="note">예: 아차산, 인왕산 일부</div>
+          </div>
+          <div class="level-item">
+            <strong>중급</strong>
+            경사도가 있고 바위 구간이 섞여 있습니다. 등산화와 스틱이 있으면 훨씬 안전하며 충분한 수분 섭취가 필요합니다.
+            <div class="note">예: 관악산, 도봉산</div>
+          </div>
+          <div class="level-item">
+            <strong>상급</strong>
+            험준한 암릉 구간이나 장거리 코스입니다. 체력 관리와 기상 확인이 중요하며 무리한 산행은 피해야 합니다.
+            <div class="note">예: 설악산 일부 장거리 코스</div>
+          </div>
+        </div>
+      </section>
 
-        <article class="checklist-card card">
-            <h2>🎒 등산 전 필수 체크리스트</h2>
-            <ul class="checklist">
-                <li><span>기상 예보 확인 (산의 날씨는 평지와 다릅니다)</span></li>
-                <li><span>여분의 옷 (정상 부근은 기온이 낮습니다)</span></li>
-                <li><span>고열량 간식 (초콜릿, 견과류 등)</span></li>
-                <li><span>보조 배터리와 지도 앱</span></li>
-            </ul>
-        </article>
-    </section>
-</main>
+      <section class="content-card">
+        <h2>등산 초보자를 위한 입문 가이드</h2>
 
-<footer class="container">
-    <p>© 2026 등산로 가이드 - TEAM Kim | <a href="#">개인정보처리방침</a></p>
-</footer>
+        <div style="margin-top: 16px;">
+          <h3>1. 산행 전 준비</h3>
+          <ul>
+            <li>기상 상황과 강수 예보를 먼저 확인하세요.</li>
+            <li>일몰 시간을 확인하고 하산 시간을 미리 정하세요.</li>
+            <li>등산로 입구, 하산 지점, 주차·대중교통 동선을 체크하세요.</li>
+          </ul>
+        </div>
 
+        <div style="margin-top: 16px;">
+          <h3>2. 복장 가이드</h3>
+          <ul>
+            <li>베이스 레이어: 땀을 빨리 말리는 기능성 티셔츠</li>
+            <li>미드 레이어: 플리스 또는 얇은 보온 옷</li>
+            <li>아우터: 바람막이 또는 방수 재킷</li>
+          </ul>
+        </div>
+
+        <div style="margin-top: 16px;">
+          <h3>3. 보행 팁</h3>
+          <ul>
+            <li>보폭을 좁게 유지하고 발바닥 전체로 디딘다는 느낌으로 걷습니다.</li>
+            <li>오를 때는 상체를 약간 앞으로, 내려갈 때는 무릎을 약간 굽혀 충격을 줄이세요.</li>
+            <li>장거리 산행이라면 스틱을 준비하는 것이 좋습니다.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="content-card">
+        <h2>등산 전 체크리스트</h2>
+        <ul>
+          <li>기상 예보 확인</li>
+          <li>충분한 물과 간식 준비</li>
+          <li>보조 배터리와 지도 앱 준비</li>
+          <li>여분의 겉옷 챙기기</li>
+          <li>무리하지 않는 코스 선택</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      © 2026 등산로 가이드 | 안전한 산행을 위한 정보 제공
+    </div>
+  </footer>
+
+  <script>
+    const mountainInput = document.getElementById("mountainInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const statusEl = document.getElementById("status");
+    const resultCard = document.getElementById("resultCard");
+
+    const mountainNameEl = document.getElementById("mountainName");
+    const mountainLocationEl = document.getElementById("mountainLocation");
+    const mountainHeightEl = document.getElementById("mountainHeight");
+    const mountainSummaryEl = document.getElementById("mountainSummary");
+    const mountainStoryEl = document.getElementById("mountainStory");
+
+    function showStatus(message, isError = false) {
+      statusEl.textContent = message;
+      statusEl.style.color = isError ? "#dc2626" : "#374151";
+    }
+
+    function renderMountain(mountain) {
+      mountainNameEl.textContent = mountain.name || "산 정보";
+      mountainLocationEl.textContent = mountain.location || "-";
+      mountainHeightEl.textContent = mountain.height ? `${mountain.height} m` : "-";
+      mountainSummaryEl.textContent = mountain.summary || "-";
+      mountainStoryEl.textContent = mountain.story || "상세 정보가 없습니다.";
+      resultCard.classList.add("show");
+      resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    async function searchMountain() {
+      const name = mountainInput.value.trim();
+
+      if (!name) {
+        showStatus("산 이름을 입력해주세요.", true);
+        resultCard.classList.remove("show");
+        return;
+      }
+
+      searchBtn.disabled = true;
+      searchBtn.textContent = "검색 중...";
+      showStatus("검색 중입니다...");
+
+      try {
+        const response = await fetch(`/api/mountain?name=${encodeURIComponent(name)}`);
+        const text = await response.text();
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(`서버가 JSON이 아닌 응답을 보냈습니다. ${text.slice(0, 120)}`);
+        }
+
+        if (!response.ok || !data.ok) {
+          throw new Error(data.error || "검색 실패");
+        }
+
+        renderMountain(data.mountain || {});
+        showStatus(`"${name}" 검색 완료`);
+      } catch (error) {
+        resultCard.classList.remove("show");
+        showStatus(error.message || "오류가 발생했습니다.", true);
+      } finally {
+        searchBtn.disabled = false;
+        searchBtn.textContent = "검색하기";
+      }
+    }
+
+    searchBtn.addEventListener("click", searchMountain);
+    mountainInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") searchMountain();
+    });
+  </script>
 </body>
 </html>

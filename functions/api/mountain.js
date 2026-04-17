@@ -23,11 +23,21 @@ function getTag(xml, tag) {
   return match ? decodeXml(match[1]).trim() : "";
 }
 
+function normalizeServiceKey(value = "") {
+  const key = String(value).trim();
+  if (!key) return "";
+  try {
+    return /%[0-9A-Fa-f]{2}/.test(key) ? decodeURIComponent(key) : key;
+  } catch {
+    return key;
+  }
+}
+
 export async function onRequestGet(context) {
   try {
     const url = new URL(context.request.url);
     const name = (url.searchParams.get("name") || "").trim();
-    const serviceKey = (context.env.FOREST_API_KEY || "").trim();
+    const serviceKey = normalizeServiceKey(context.env.FOREST_API_KEY || "");
 
     if (!name) {
       return makeJson({ ok: false, error: "산 이름을 입력해주세요." }, 400);
@@ -37,7 +47,7 @@ export async function onRequestGet(context) {
       return makeJson({ ok: false, error: "FOREST_API_KEY가 없습니다." }, 500);
     }
 
-    const apiUrl = new URL("http://api.forest.go.kr/openapi/service/trailInfoService/getforeststoryservice");
+    const apiUrl = new URL("https://api.forest.go.kr/openapi/service/trailInfoService/getforeststoryservice");
     apiUrl.searchParams.set("serviceKey", serviceKey);
     apiUrl.searchParams.set("mntnNm", name);
     apiUrl.searchParams.set("numOfRows", "10");

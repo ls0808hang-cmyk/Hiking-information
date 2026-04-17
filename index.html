@@ -3,306 +3,636 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>전국 등산로 난이도 안내 가이드 | 산행 준비의 모든 것</title>
+  <title>전국 등산로 정보 및 난이도 안내</title>
   <meta
     name="description"
-    content="가고 싶은 산 이름을 검색해 위치, 높이, 산 정보와 등산 난이도 준비 팁을 확인하세요."
+    content="산 이름을 검색해 위치, 높이, 난이도, 초보자용 산행 팁을 확인하세요."
   />
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --green-900: #184d2a;
+      --green-800: #1f6b3b;
+      --green-700: #2d7d46;
+      --green-600: #3d8b57;
+      --green-100: #eaf5ed;
+      --green-50: #f6fbf7;
+      --gray-900: #111827;
+      --gray-800: #1f2937;
+      --gray-700: #374151;
+      --gray-500: #6b7280;
+      --gray-300: #d1d5db;
+      --gray-200: #e5e7eb;
+      --gray-100: #f3f4f6;
+      --white: #ffffff;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --info: #2563eb;
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.08);
+      --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.06);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+
     body {
       margin: 0;
       font-family: Arial, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      color: #1f2937;
-      background: #f5f7f4;
-      line-height: 1.6;
-      /* subtle noise texture */
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-      background-blend-mode: overlay;
-      background-attachment: fixed;
+      color: var(--gray-800);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(29, 95, 57, 0.05), transparent 25%),
+        radial-gradient(circle at 80% 10%, rgba(29, 95, 57, 0.04), transparent 25%),
+        linear-gradient(180deg, #f7faf7, #f3f5f3);
+      line-height: 1.65;
     }
-    .wrap {
-      width: min(960px, calc(100% - 32px));
-      margin: 0 auto;
-    }
-    header {
-      background: linear-gradient(135deg, #1f5132, #3d7a52);
+
+    .hero {
+      background: linear-gradient(135deg, #1d5f39, #2f7c49);
       color: white;
-      padding: 48px 0 36px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 70px 20px 90px;
+      position: relative;
+      overflow: hidden;
     }
-    h1, h2, h3, p { margin: 0; }
-    .hero-sub {
-      margin-top: 10px;
-      opacity: 0.92;
-      font-size: 1.02rem;
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      z-index: 0;
     }
-    .search-card,
-    .result-card,
-    .content-card {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(8px);
-      border-radius: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-      padding: 24px;
-      margin-top: 20px;
-      border: 1px solid #e5e7eb;
+
+    .hero::before {
+      top: -120px;
+      right: -100px;
     }
+
+    .hero::after {
+      bottom: -160px;
+      left: -120px;
+    }
+
+    .container {
+      width: min(1040px, calc(100% - 32px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      opacity: 0.96;
+    }
+
+    .search-wrap {
+      margin-top: -46px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .search-card {
+      margin-bottom: 26px;
+    }
+
+    .search-title {
+      font-size: 2rem;
+      color: var(--gray-900);
+      margin-bottom: 8px;
+      letter-spacing: -0.03em;
+    }
+
+    .hint {
+      color: var(--gray-500);
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
     .search-row {
       display: grid;
-      grid-template-columns: 1fr 130px;
+      grid-template-columns: 1fr 150px;
       gap: 12px;
-      margin-top: 18px;
     }
+
     input {
       width: 100%;
-      height: 52px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      padding: 0 16px;
+      height: 56px;
+      border-radius: 16px;
+      border: 1.5px solid #b6c8b6;
+      padding: 0 18px;
       font-size: 1rem;
-      transition: border-color 0.2s;
-    }
-    input:focus {
       outline: none;
-      border-color: #1f6b3b;
+      transition: all 0.2s ease;
+      background: #fcfffc;
     }
+
+    input:focus {
+      border-color: var(--green-700);
+      box-shadow: 0 0 0 4px rgba(31, 107, 59, 0.12);
+    }
+
     button {
-      height: 52px;
+      height: 56px;
       border: 0;
-      border-radius: 12px;
-      background: #1f6b3b;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--green-700), var(--green-800));
       color: white;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
-      transition: filter 0.2s, transform 0.1s;
+      transition: transform 0.06s ease, box-shadow 0.2s ease;
+      box-shadow: 0 10px 20px rgba(31, 107, 59, 0.18);
     }
-    button:hover { filter: brightness(1.05); }
-    button:active { transform: scale(0.98); }
+
+    button:hover {
+      box-shadow: 0 14px 28px rgba(31, 107, 59, 0.22);
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
     button:disabled {
-      background: #9ca3af;
+      opacity: 0.7;
       cursor: not-allowed;
+      box-shadow: none;
     }
+
     .status {
+      min-height: 26px;
       margin-top: 12px;
-      font-size: 0.95rem;
-      color: #374151;
-      min-height: 24px;
+      font-size: 0.96rem;
+      font-weight: 600;
     }
-    .result-card { display: none; }
-    .result-card.show { 
-        display: block; 
-        animation: fadeIn 0.4s ease-out;
+
+    .status.error {
+      color: var(--danger);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .status.success {
+      color: var(--green-800);
     }
-    .result-title {
+
+    .result-card {
+      display: none;
+      margin-bottom: 26px;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .result-card.show {
+      display: block;
+    }
+
+    .result-top {
+      background: linear-gradient(135deg, #f7fbf8, #eef6f0);
+      padding: 28px 28px 22px;
+      border-bottom: 1px solid #e5ece7;
+    }
+
+    .result-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1.35rem;
-      font-weight: 800;
-      margin-bottom: 14px;
-      color: #1f5132;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
+
+    .mountain-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .mountain-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #dff1e4, #eef8f0);
+      color: var(--green-800);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+      border: 1px solid #d6eadb;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      color: var(--gray-900);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .result-sub {
+      margin-top: 6px;
+      color: var(--gray-500);
+      font-size: 0.96rem;
+    }
+
+    .badges {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .badge.difficulty {
+      background: #edf7ef;
+      color: #166534;
+      border-color: #d3e8d8;
+    }
+
+    .badge.level-easy {
+      background: #edf9f0;
+      color: #15803d;
+      border-color: #cdebd4;
+    }
+
+    .badge.level-medium {
+      background: #fff7ed;
+      color: #b45309;
+      border-color: #fed7aa;
+    }
+
+    .badge.level-hard {
+      background: #fef2f2;
+      color: #b91c1c;
+      border-color: #fecaca;
+    }
+
+    .badge.source {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #c7dbff;
+      font-weight: 700;
+    }
+
+    .result-body {
+      padding: 26px 28px 28px;
+    }
+
     .info-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 18px;
     }
-    .info-box {
-      background: #f8faf8;
+
+    .info-item {
+      background: linear-gradient(180deg, #fbfcfb, #f7f9f7);
       border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 100px;
+      box-shadow: var(--shadow-soft);
     }
-    .info-label {
-      font-size: 0.9rem;
-      color: #6b7280;
-      margin-bottom: 6px;
-    }
-    .info-value {
+
+    .info-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--gray-500);
+      font-size: 0.92rem;
       font-weight: 700;
+    }
+
+    .info-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .info-value {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--gray-900);
       word-break: keep-all;
     }
-    .story {
-      white-space: pre-line;
+
+    .summary-box,
+    .detail-box,
+    .guide-box {
+      border-radius: 18px;
+      padding: 20px 20px 18px;
+      border: 1px solid #e5e7eb;
+      margin-top: 14px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #f7fbf7, #eef7f1);
+      border-color: #dbe9df;
+    }
+
+    .detail-box {
       background: #fbfcfb;
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 16px;
-      margin-top: 12px;
     }
-    main { padding: 24px 0 56px; }
-    section { margin-top: 24px; }
-    .level-grid {
-      display: grid;
-      gap: 14px;
+
+    .guide-box {
+      background: linear-gradient(135deg, #eff8ff, #f7fbff);
+      border-color: #dbeafe;
     }
-    .level-item {
-      border: 1px solid #e5e7eb;
-      border-radius: 14px;
-      padding: 16px;
-      background: #fff;
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--gray-800);
+      margin-bottom: 12px;
     }
-    .level-item strong {
-      display: block;
-      margin-bottom: 8px;
-      color: #14532d;
+
+    .section-head .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
     }
-    ul {
+
+    .summary-box .icon {
+      background: #e3f3e7;
+      color: var(--green-800);
+    }
+
+    .detail-box .icon {
+      background: #eef2f7;
+      color: #475569;
+    }
+
+    .guide-box .icon {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .summary-text {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .detail-text,
+    .guide-text {
+      font-size: 1rem;
+      color: var(--gray-700);
+      line-height: 1.8;
+      word-break: keep-all;
+    }
+
+    .guide-box ul {
+      margin: 12px 0 0;
       padding-left: 20px;
-      margin: 10px 0 0;
     }
+
+    .guide-box li {
+      margin-bottom: 8px;
+      color: var(--gray-700);
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .tip-card {
+      background: var(--white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .tip-card h2 {
+      font-size: 1.4rem;
+      margin-bottom: 16px;
+      color: var(--gray-900);
+    }
+
+    .guide-list {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .guide-list li {
+      margin-bottom: 12px;
+      color: var(--gray-700);
+    }
+
+    .tip-card strong {
+      color: var(--gray-900);
+    }
+
     footer {
-      border-top: 1px solid #dfe6df;
-      padding: 24px 0 40px;
-      color: #6b7280;
+      padding: 12px 20px 44px;
+      color: var(--gray-500);
       font-size: 0.95rem;
-      background: #ffffff;
       text-align: center;
     }
-    .note {
-      font-size: 0.92rem;
-      color: #6b7280;
-      margin-top: 10px;
+
+    @media (max-width: 900px) {
+      .tips-grid {
+        grid-template-columns: 1fr;
+      }
     }
+
     @media (max-width: 720px) {
+      .hero {
+        padding: 56px 20px 76px;
+      }
+
+      .hero h1 {
+        font-size: 1.9rem;
+      }
+
+      .search-wrap {
+        margin-top: -36px;
+      }
+
       .search-row,
       .info-grid {
         grid-template-columns: 1fr;
       }
-      header {
-        padding: 40px 0 30px;
+
+      .search-title {
+        font-size: 1.6rem;
+      }
+
+      .result-title {
+        font-size: 1.5rem;
+      }
+
+      .card,
+      .result-top,
+      .result-body {
+        padding-left: 20px;
+        padding-right: 20px;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap">
+  <header class="hero">
+    <div class="container">
       <h1>전국 등산로 정보 및 난이도 안내</h1>
-      <p class="hero-sub">안전하고 즐거운 산행을 위한 필수 가이드</p>
+      <p>안전하고 즐거운 산행을 위한 필수 가이드</p>
     </div>
   </header>
 
-  <main>
-    <div class="wrap">
-      <section class="search-card">
-        <h2>가고 싶은 산의 이름을 입력하세요</h2>
-        <p class="note">예: 북한산, 관악산, 아차산, 지리산, 설악산</p>
+  <main class="container search-wrap">
+    <section class="card search-card">
+      <h2 class="search-title">가고 싶은 산의 이름을 입력하세요</h2>
+      <p class="hint">예: 북한산, 관악산, 아차산, 지리산, 설악산</p>
 
-        <div class="search-row">
-          <input
-            id="mountainInput"
-            type="text"
-            placeholder="산 이름을 입력하세요"
-            autocomplete="off"
-          />
-          <button id="searchBtn" type="button">검색하기</button>
+      <div class="search-row">
+        <input
+          id="mountainInput"
+          type="text"
+          placeholder="산 이름을 입력하세요"
+          autocomplete="off"
+        />
+        <button id="searchBtn" type="button">검색하기</button>
+      </div>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section id="resultCard" class="card result-card" aria-live="polite">
+      <div class="result-top">
+        <div class="result-header">
+          <div class="mountain-title-wrap">
+            <div class="mountain-icon">⛰️</div>
+            <div>
+              <div class="result-title" id="mountainName">산 이름</div>
+              <div class="result-sub">검색된 산의 기본 정보와 추천 안내입니다</div>
+            </div>
+          </div>
+
+          <div class="badges">
+            <span id="difficultyBadge" class="badge difficulty">난이도</span>
+            <span id="sourceBadge" class="badge source">검색 결과</span>
+          </div>
         </div>
+      </div>
 
-        <div id="status" class="status"></div>
-      </section>
-
-      <section id="resultCard" class="result-card" aria-live="polite">
-        <div class="result-title">⛰️ <span id="mountainName">산 정보</span></div>
-
+      <div class="result-body">
         <div class="info-grid">
-          <div class="info-box">
-            <div class="info-label">위치</div>
-            <div id="mountainLocation" class="info-value">-</div>
+          <div class="info-item">
+            <div class="info-head">
+              <div class="info-icon">📍</div>
+              위치
+            </div>
+            <div class="info-value" id="mountainLocation">-</div>
           </div>
-          <div class="info-box">
-            <div class="info-label">높이</div>
-            <div id="mountainHeight" class="info-value">-</div>
+
+          <div class="info-item">
+            <div class="info-head">
+              <div class="info-icon">📏</div>
+              높이
+            </div>
+            <div class="info-value" id="mountainHeight">-</div>
           </div>
         </div>
 
-        <div class="info-box">
-          <div class="info-label">부제 / 요약</div>
-          <div id="mountainSummary" class="info-value">-</div>
+        <div class="summary-box">
+          <div class="section-head">
+            <div class="icon">✨</div>
+            한 줄 요약
+          </div>
+          <div class="summary-text" id="mountainSummary">-</div>
         </div>
 
-        <div class="story">
-          <div class="info-label">산 유래 및 정보</div>
-          <div id="mountainStory">-</div>
+        <div class="detail-box">
+          <div class="section-head">
+            <div class="icon">📚</div>
+            산 유래 및 정보
+          </div>
+          <div class="detail-text" id="mountainStory">-</div>
         </div>
-      </section>
 
-      <section class="content-card">
+        <div class="guide-box">
+          <div class="section-head">
+            <div class="icon">💡</div>
+            초보자용 추천 안내
+          </div>
+          <div class="guide-text" id="mountainGuide">-</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tips-grid">
+      <section class="tip-card">
         <h2>등산 난이도별 산행 팁</h2>
-        <div class="level-grid" style="margin-top: 14px;">
-          <div class="level-item">
-            <strong>초급</strong>
-            평탄한 산책로 위주의 코스입니다. 운동화로도 가능하지만 발목 보호를 위해 경등산화를 추천합니다.
-            <div class="note">예: 아차산, 인왕산 일부</div>
-          </div>
-          <div class="level-item">
-            <strong>중급</strong>
-            경사도가 있고 바위 구간이 섞여 있습니다. 등산화와 스틱이 있으면 훨씬 안전하며 충분한 수분 섭취가 필요합니다.
-            <div class="note">예: 관악산, 도봉산</div>
-          </div>
-          <div class="level-item">
-            <strong>상급</strong>
-            험준한 암릉 구간이나 장거리 코스입니다. 체력 관리와 기상 확인이 중요하며 무리한 산행은 피해야 합니다.
-            <div class="note">예: 설악산 일부 장거리 코스</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="content-card">
-        <h2>등산 초보자를 위한 입문 가이드</h2>
-
-        <div style="margin-top: 16px;">
-          <h3>1. 산행 전 준비</h3>
-          <ul>
-            <li>기상 상황과 강수 예보를 먼저 확인하세요.</li>
-            <li>일몰 시간을 확인하고 하산 시간을 미리 정하세요.</li>
-            <li>등산로 입구, 하산 지점, 주차·대중교통 동선을 체크하세요.</li>
-          </ul>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <h3>2. 복장 가이드</h3>
-          <ul>
-            <li>베이스 레이어: 땀을 빨리 말리는 기능성 티셔츠</li>
-            <li>미드 레이어: 플리스 또는 얇은 보온 옷</li>
-            <li>아우터: 바람막이 또는 방수 재킷</li>
-          </ul>
-        </div>
-
-        <div style="margin-top: 16px;">
-          <h3>3. 보행 팁</h3>
-          <ul>
-            <li>보폭을 좁게 유지하고 발바닥 전체로 디딘다는 느낌으로 걷습니다.</li>
-            <li>오를 때는 상체를 약간 앞으로, 내려갈 때는 무릎을 약간 굽혀 충격을 줄이세요.</li>
-            <li>장거리 산행이라면 스틱을 준비하는 것이 좋습니다.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="content-card">
-        <h2>등산 전 체크리스트</h2>
-        <ul>
-          <li>기상 예보 확인</li>
-          <li>충분한 물과 간식 준비</li>
-          <li>보조 배터리와 지도 앱 준비</li>
-          <li>여분의 겉옷 챙기기</li>
-          <li>무리하지 않는 코스 선택</li>
+        <ul class="guide-list">
+          <li><strong>초급:</strong> 짧은 코스부터 시작하고, 운동화보다 가벼운 등산화를 추천합니다.</li>
+          <li><strong>중급:</strong> 경사와 바위 구간이 있을 수 있으니 물, 간식, 스틱을 챙기면 좋습니다.</li>
+          <li><strong>상급:</strong> 기상 확인, 체력 안배, 하산 시간 계획이 매우 중요합니다.</li>
         </ul>
       </section>
-    </div>
+
+      <section class="tip-card">
+        <h2>등산 전 체크리스트</h2>
+        <ul class="guide-list">
+          <li>기상 예보 확인</li>
+          <li>해 지기 전 하산 계획 세우기</li>
+          <li>물, 간식, 보조 배터리 준비</li>
+          <li>처음 가는 산이면 무리한 장거리 코스 피하기</li>
+        </ul>
+      </section>
+    </section>
   </main>
 
   <footer>
-    <div class="wrap">
-      © 2026 등산로 가이드 | 안전한 산행을 위한 정보 제공
-    </div>
+    © 2026 등산 정보 가이드
   </footer>
 
   <script>
@@ -314,57 +644,91 @@
     const mountainNameEl = document.getElementById("mountainName");
     const mountainLocationEl = document.getElementById("mountainLocation");
     const mountainHeightEl = document.getElementById("mountainHeight");
+    const difficultyBadgeEl = document.getElementById("difficultyBadge");
+    const sourceBadgeEl = document.getElementById("sourceBadge");
     const mountainSummaryEl = document.getElementById("mountainSummary");
     const mountainStoryEl = document.getElementById("mountainStory");
+    const mountainGuideEl = document.getElementById("mountainGuide");
 
-    function showStatus(message, isError = false) {
+    function setStatus(message, type = "") {
       statusEl.textContent = message;
-      statusEl.style.color = isError ? "#dc2626" : "#374151";
+      statusEl.className = "status";
+      if (type) {
+        statusEl.classList.add(type);
+      }
     }
 
-    function renderMountain(mountain) {
-      mountainNameEl.textContent = mountain.name || "산 정보";
+    function getDifficultyClass(difficulty = "") {
+      const text = String(difficulty);
+
+      if (text.includes("초급")) return "level-easy";
+      if (text.includes("상급")) return "level-hard";
+      if (text.includes("중급")) return "level-medium";
+
+      return "";
+    }
+
+    function renderSourceBadge(source) {
+      if (!source) {
+        sourceBadgeEl.textContent = "검색 결과";
+        return;
+      }
+
+      const matchSource = source.mountainMatch === "openai" ? "OpenAI 매칭" : "로컬 매칭";
+      const guideSource = source.guide === "openai" ? "AI 안내" : "기본 안내";
+
+      sourceBadgeEl.textContent = `${matchSource} · ${guideSource}`;
+    }
+
+    function renderResult(data) {
+      const mountain = data.mountain || {};
+      const difficulty = mountain.difficulty || "-";
+
+      mountainNameEl.textContent = mountain.name || "-";
       mountainLocationEl.textContent = mountain.location || "-";
       mountainHeightEl.textContent = mountain.height ? `${mountain.height} m` : "-";
       mountainSummaryEl.textContent = mountain.summary || "-";
-      mountainStoryEl.textContent = mountain.story || "상세 정보가 없습니다.";
+      mountainStoryEl.textContent = mountain.story || "-";
+      mountainGuideEl.textContent = mountain.guide || "-";
+
+      difficultyBadgeEl.textContent = `난이도: ${difficulty}`;
+      difficultyBadgeEl.className = "badge difficulty";
+      const difficultyClass = getDifficultyClass(difficulty);
+      if (difficultyClass) {
+        difficultyBadgeEl.classList.add(difficultyClass);
+      }
+
+      renderSourceBadge(data.source);
+
       resultCard.classList.add("show");
-      resultCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     async function searchMountain() {
-      const name = mountainInput.value.trim();
+      const query = mountainInput.value.trim();
 
-      if (!name) {
-        showStatus("산 이름을 입력해주세요.", true);
+      if (!query) {
+        setStatus("산 이름을 입력해주세요.", "error");
         resultCard.classList.remove("show");
         return;
       }
 
       searchBtn.disabled = true;
       searchBtn.textContent = "검색 중...";
-      showStatus("검색 중입니다...");
+      setStatus("검색 중입니다...");
 
       try {
-        const response = await fetch(`/api/mountain?name=${encodeURIComponent(name)}`);
-        const text = await response.text();
-
-        let data;
-        try {
-          data = JSON.parse(text);
-        } catch {
-          throw new Error(`서버가 JSON이 아닌 응답을 보냈습니다. ${text.slice(0, 120)}`);
-        }
+        const response = await fetch(`/api/mountain?name=${encodeURIComponent(query)}`);
+        const data = await response.json();
 
         if (!response.ok || !data.ok) {
-          throw new Error(data.error || "검색 실패");
+          throw new Error(data.error || "검색에 실패했습니다.");
         }
 
-        renderMountain(data.mountain || {});
-        showStatus(`"${name}" 검색 완료`);
+        renderResult(data);
+        setStatus(`"${query}" 검색 완료`, "success");
       } catch (error) {
         resultCard.classList.remove("show");
-        showStatus(error.message || "오류가 발생했습니다.", true);
+        setStatus(error.message || "오류가 발생했습니다.", "error");
       } finally {
         searchBtn.disabled = false;
         searchBtn.textContent = "검색하기";
@@ -372,8 +736,11 @@
     }
 
     searchBtn.addEventListener("click", searchMountain);
-    mountainInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") searchMountain();
+
+    mountainInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        searchMountain();
+      }
     });
   </script>
 </body>
